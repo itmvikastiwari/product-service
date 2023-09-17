@@ -1,0 +1,177 @@
+// Define the Category entity
+entity Category {
+  name String required,
+  description String,
+  parentCategoryId String,
+  state State,
+  images String,
+  createdAt Date,
+  modifiedAt Date,
+  deletedAt Date,
+  deletedBy String,
+  modifiedBy String,
+}
+
+entity CategoryAttributeKey {
+  key String required,
+  createdAt Date,
+  modifiedAt Date,
+  deletedAt Date,
+  deletedBy String,
+  modifiedBy String,
+}  
+
+// Define the Product entity
+entity Product {
+  name String required,
+  description String,
+  createdAt Date,
+  modifiedAt Date,
+  deletedAt Date,
+  deletedBy String,
+  modifiedBy String,
+}
+
+entity Price{
+  price Decimal required,
+  currency String required,
+}
+
+// Define the Variant entity for product variations
+entity Variant {
+  name String required,
+  title String required,
+  mrp Price required,
+  skuId String required unique,// SKU ID is unique per variant
+  mainImage String,
+  otherimages String,
+  createdAt Date,
+  modifiedAt Date,
+  deletedAt Date,
+  deletedBy String,
+  modifiedBy String,
+}
+
+// Define the Attribute entity for product or variant attributes
+entity Attribute {
+  name String required,
+  value String required,
+  createdAt Date,
+  modifiedAt Date,
+  deletedAt Date,
+  deletedBy String,
+  modifiedBy String,
+}
+
+// Define the Seller entity
+entity Seller {
+  name String required,
+  gstno String,
+  tin String,
+  pan String,
+  currency String
+  contactName String,
+  contactEmail String,
+  contactPhone String,
+  createdAt Date,
+  modifiedAt Date,
+  deletedAt Date,
+  deletedBy String,
+  modifiedBy String,
+}
+
+entity SellerAddress {
+  streetAddress String required,
+  city String required,
+  state String required,
+  postalCode String required,
+  country String required,
+  type String required,
+  // You can add more address-related fields as needed
+  createdAt Date,
+  modifiedAt Date,
+  deletedAt Date,
+  deletedBy String,
+  modifiedBy String,
+}
+
+// Define the SellerProduct entity to store seller-specific product information
+entity SellerVariant {
+  price Price required,
+  inventory Integer required,
+  discountPerc Decimal,
+  discountAbs Decimal,
+  createdAt Date,
+  modifiedAt Date,
+  deletedAt Date,
+  deletedBy String,
+  modifiedBy String,
+}
+
+// Define the Pincode entity
+entity Pincode {
+  code String required unique,
+  city String,
+  region String,
+  createdAt Date,
+  modifiedAt Date,
+  deletedAt Date,
+  deletedBy String,
+  modifiedBy String,
+}
+
+// Define the SellerProductServiceability entity
+entity SellerProductServiceability {
+  isServiceable Boolean required,
+  createdAt Date,
+  modifiedAt Date,
+  deletedAt Date,
+  deletedBy String,
+  modifiedBy String,
+}
+
+// Define relationships between entities
+relationship OneToOne {
+  Seller{primaryAddress} to SellerAddress{seller}
+}
+
+relationship ManyToOne {
+  Seller{serviceabilities} to SellerProductServiceability{seller},
+}
+
+relationship ManyToMany {
+  Category{attributeKeys} to CategoryAttributeKey{categories}
+}
+
+// Define a relationship between Category and Product
+relationship OneToMany {
+  Category{products} to Product{category}
+}
+
+// Define a relationship between Product and Variant
+relationship OneToMany {
+  Product{variants} to Variant{product}
+}
+
+// Define a relationship between Variant and Attribute
+relationship ManyToMany {
+  Variant{attributes} to Attribute{variants}
+}
+
+relationship ManyToMany {
+  Seller{variants(sellerVariants)} to SellerVariant{variants}
+  // "sellerVariants" represents the relationship between Seller and SellerProduct for variants
+}
+
+relationship ManyToMany {
+  Variant to SellerVariant{variants}
+  // "sellerVariants" represents the relationship between Seller and SellerProduct for variants
+}
+
+
+relationship ManyToOne {
+  Pincode{serviceabilities} to SellerProductServiceability{pincode},
+}
+
+dto all with mapstruct
+service all with serviceImpl
